@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
-import intulistLogo from "@/assets/Intulist-logo.png";
+import intulistLogo from "@/assets/intulist-logo.svg";
 import Footer from "@/components/Footer";
 
 const TermsOfService = () => (

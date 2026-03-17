@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import intulistLogo from "@/assets/Intulist-logo.png";
+import intulistLogo from "@/assets/intulist-logo.svg";
 
 const Footer = () => (
   <footer className="border-t border-border/50 py-14">

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { CloudUpload, GitBranch, ShieldCheck, CreditCard, BarChart3, Lock, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
-import intulistLogo from "@/assets/Intulist-logo.png";
+import intulistLogo from "@/assets/intulist-logo.svg";
 import heroIllustration from "@/assets/hero-illustration.png";
 import Footer from "@/components/Footer";
 

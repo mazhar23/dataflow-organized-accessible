@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, CloudUpload, GitBranch, ShieldCheck, BarChart3, Lock, Zap, RefreshCw, Globe, Database } from "lucide-react";
-import intulistLogo from "@/assets/Intulist-logo.png";
+import intulistLogo from "@/assets/intulist-logo.svg";
 import Footer from "@/components/Footer";
 
 const fadeUp = {
