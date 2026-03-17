@@ -46,7 +46,7 @@ const Login = () => {
             <span className="gradient-text">Data</span>Flow
           </Link>
           <h1 className="mt-6 font-display text-3xl font-bold">Welcome back</h1>
-          <p className="mt-2 text-sm text-muted-foreground">Sign in to your DataFlow account</p>
+          <p className="mt-2 text-sm text-muted-foreground">Sign in to your Intulist account</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">

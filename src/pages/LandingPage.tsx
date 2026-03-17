@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { CloudUpload, GitBranch, ShieldCheck, CreditCard, BarChart3, Lock, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
-import dataflowLogo from "@/assets/dataflow-logo.png";
+import intulistLogo from "@/assets/Intulist-logo.png";
 import heroIllustration from "@/assets/hero-illustration.png";
 import Footer from "@/components/Footer";
 
@@ -77,7 +77,7 @@ const Navbar = () => (
   <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
     <div className="container flex h-16 items-center justify-between">
       <a href="/">
-        <img src={dataflowLogo} alt="DataFlow" className="h-12" />
+        <img src={intulistLogo} alt="Intulist" className="h-12" />
       </a>
       <div className="hidden md:flex items-center gap-8">
         {[
@@ -130,7 +130,7 @@ const Hero = () => (
           className="text-lg text-muted-foreground max-w-xl mx-auto lg:mx-0 mb-10"
           initial="hidden" animate="visible" variants={fadeUp} custom={2}
         >
-          DataFlow gives your team a single source of truth—upload, search, and manage data with enterprise-grade security.
+          Intulist gives your team a single source of truth—upload, search, and manage data with enterprise-grade security.
         </motion.p>
         <motion.div
           className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4"
@@ -154,11 +154,11 @@ const Hero = () => (
 
 
 const capabilities = [
-  { icon: CloudUpload, title: "Seamless Data Ingestion & Storage", desc: "Rely on our secure cloud infrastructure to house and organise every record you bring in.", detail: "Upload CSV, JSON, or Excel files and let DataFlow automatically parse, validate, and store them in our high-availability cloud database. With built-in deduplication and schema detection, your data is ready to query in seconds—no manual mapping required." },
+  { icon: CloudUpload, title: "Seamless Data Ingestion & Storage", desc: "Rely on our secure cloud infrastructure to house and organise every record you bring in.", detail: "Upload CSV, JSON, or Excel files and let Intulist automatically parse, validate, and store them in our high-availability cloud database. With built-in deduplication and schema detection, your data is ready to query in seconds—no manual mapping required." },
   { icon: GitBranch, title: "Intelligent Data Routing", desc: "Funnel your datasets to any endpoint, webhook, or third-party API with zero friction.", detail: "Configure routing rules to automatically distribute incoming records to CRMs, marketing platforms, or custom webhooks. Set up conditional logic, transformations, and retry policies—all from a visual interface, no code needed." },
   { icon: ShieldCheck, title: "Multi-Layer Data Cleansing", desc: "Leverage our automated validation pipeline to scrub, normalise, and enrich your records on import.", detail: "Our three-stage pipeline catches formatting errors, removes duplicates, and enriches records with missing fields using third-party data sources. Custom validation rules let you enforce business logic before data ever hits your database." },
   { icon: CreditCard, title: "Usage-Based Billing", desc: "Only spend on the volume you actually process—no subscriptions, no lock-in commitments.", detail: "Start free with 500 records per month, then pay per record as you scale. No setup fees, no annual contracts. Real-time usage dashboards let you track spend and set budget alerts so there are never surprises on your invoice." },
-  { icon: BarChart3, title: "Actionable Analytics", desc: "Monitor every import, track conversion metrics, and measure the ROI of your data operations in real time.", detail: "Visualise import trends, rejection rates, and data quality scores with interactive charts. Build custom reports, schedule automated exports, and share dashboards with your team—all without leaving DataFlow." },
+  { icon: BarChart3, title: "Actionable Analytics", desc: "Monitor every import, track conversion metrics, and measure the ROI of your data operations in real time.", detail: "Visualise import trends, rejection rates, and data quality scores with interactive charts. Build custom reports, schedule automated exports, and share dashboards with your team—all without leaving Intulist." },
   { icon: Lock, title: "Enterprise-Grade Protection", desc: "Your records sit behind AES-256 encryption at rest with strict access controls—built to be breach-resistant.", detail: "Every record is encrypted at rest with AES-256 and in transit with TLS 1.3. Role-based access control, audit logging, and SOC 2-aligned practices ensure your data meets the most stringent compliance requirements." },
 ];
 
@@ -179,7 +179,7 @@ const Capabilities = () => {
             Unlock the full potential of your data
           </h2>
           <p className="text-muted-foreground max-w-lg mx-auto">
-            Here's a glimpse of what DataFlow puts at your fingertips. Explore further to see everything we offer.
+            Here's a glimpse of what Intulist puts at your fingertips. Explore further to see everything we offer.
           </p>
         </motion.div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -232,7 +232,7 @@ const LandingPage = () => (
   <>
     <Navbar />
     <Hero />
-    
+
     <Capabilities />
     <Pricing />
     <Footer />

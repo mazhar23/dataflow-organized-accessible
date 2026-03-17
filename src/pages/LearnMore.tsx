@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import dataflowLogo from "@/assets/dataflow-logo.png";
+import intulistLogo from "@/assets/Intulist-logo.png";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import {
@@ -30,7 +30,7 @@ const services = [
   {
     icon: MailCheck,
     title: "Data Validation*",
-    desc: "Industry-leading email and phone verification is automatically applied to every record you bring into DataFlow. Our validation engine is among the most accurate available—essential for outbound email campaigns and contact centres.",
+    desc: "Industry-leading email and phone verification is automatically applied to every record you bring into Intulist. Our validation engine is among the most accurate available—essential for outbound email campaigns and contact centres.",
   },
   {
     icon: MapPin,
@@ -75,7 +75,7 @@ const LearnMore = () => (
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
       <div className="container flex h-16 items-center justify-between">
         <Link to="/">
-          <img src={dataflowLogo} alt="DataFlow" className="h-12" />
+          <img src={intulistLogo} alt="Intulist" className="h-12" />
         </Link>
         <Link to="/">
           <Button variant="ghost" size="sm" className="gap-1.5">
@@ -86,7 +86,7 @@ const LearnMore = () => (
     </nav>
 
     <main className="container max-w-4xl pt-28 pb-20 space-y-24">
-      {/* ── Section 1: What is DataFlow? ── */}
+      {/* ── Section 1: What is Intulist? ── */}
       <motion.section
         initial="hidden"
         animate="visible"
@@ -99,16 +99,16 @@ const LearnMore = () => (
             <Cloud className="w-6 h-6 text-primary" />
           </div>
           <h1 className="font-display text-3xl sm:text-4xl font-bold">
-            What is <span className="gradient-text">DataFlow</span>?
+            What is <span className="gradient-text">Intulist</span>?
           </h1>
         </div>
 
         <p className="text-foreground/80 leading-relaxed text-lg">
-          DataFlow is a powerful, cloud-native data management platform designed
+          Intulist is a powerful, cloud-native data management platform designed
           to streamline how you handle consumer data—commonly known as leads. It
           allows you to seamlessly import, store, distribute, and track your data
           through an intuitive interface built with user experience at its core.
-          Beyond simple management, DataFlow features a robust API builder that
+          Beyond simple management, Intulist features a robust API builder that
           enables you to push your data to virtually any destination with ease.
         </p>
         <p className="text-foreground/80 leading-relaxed text-lg">
@@ -157,7 +157,7 @@ const LearnMore = () => (
         <p className="text-xs text-muted-foreground italic">
           *Standard email and phone verification is provided at no cost. Enhanced
           premium validation for phone and email is an optional paid add-on,
-          billed separately from your regular DataFlow subscription.
+          billed separately from your regular Intulist subscription.
         </p>
       </motion.section>
 
@@ -175,13 +175,13 @@ const LearnMore = () => (
             <DollarSign className="w-6 h-6 text-primary" />
           </div>
           <h2 className="font-display text-2xl sm:text-3xl font-bold">
-            Understanding DataFlow Pricing
+            Understanding Intulist Pricing
           </h2>
         </div>
 
         <p className="text-foreground/80 leading-relaxed text-lg">
           We've put together a comprehensive guide that breaks down every aspect
-          of DataFlow's pricing model.{" "}
+          of Intulist's pricing model.{" "}
           <a
             href="#"
             className="text-primary underline underline-offset-4 hover:text-primary/80 transition-colors"

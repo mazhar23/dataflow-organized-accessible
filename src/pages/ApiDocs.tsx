@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Code, Key, Send, Database, RefreshCw, AlertTriangle } from "lucide-react";
-import dataflowLogo from "@/assets/dataflow-logo.png";
+import intulistLogo from "@/assets/Intulist-logo.png";
 import Footer from "@/components/Footer";
 
 const endpoints = [
@@ -24,7 +24,7 @@ const ApiDocs = () => (
   <div className="min-h-screen bg-background">
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
       <div className="container flex h-16 items-center justify-between">
-        <Link to="/"><img src={dataflowLogo} alt="DataFlow" className="h-12" /></Link>
+        <Link to="/"><img src={intulistLogo} alt="Intulist" className="h-12" /></Link>
         <Link to="/"><Button variant="ghost" size="sm" className="gap-1.5"><ArrowLeft className="w-4 h-4" /> Back</Button></Link>
       </div>
     </nav>
@@ -32,7 +32,7 @@ const ApiDocs = () => (
     <main className="container max-w-4xl pt-28 pb-20 space-y-16">
       <div>
         <h1 className="font-display text-3xl sm:text-4xl font-bold mb-4">Test List API</h1>
-        <p className="text-lg text-muted-foreground">Integrate DataFlow into your stack with our RESTful API. Push, pull, and manage leads programmatically.</p>
+        <p className="text-lg text-muted-foreground">Integrate Intulist into your stack with our RESTful API. Push, pull, and manage leads programmatically.</p>
       </div>
 
       {/* Auth */}
@@ -43,7 +43,7 @@ const ApiDocs = () => (
           </div>
           <h2 className="font-display text-xl font-semibold">Authentication</h2>
         </div>
-        <p className="text-foreground/80 leading-relaxed">All API requests require a Bearer token in the <code className="px-1.5 py-0.5 rounded bg-muted text-sm font-mono">Authorization</code> header. Generate your API key from the DataFlow dashboard under Settings → API Keys.</p>
+        <p className="text-foreground/80 leading-relaxed">All API requests require a Bearer token in the <code className="px-1.5 py-0.5 rounded bg-muted text-sm font-mono">Authorization</code> header. Generate your API key from the Intulist dashboard under Settings → API Keys.</p>
         <div className="rounded-lg bg-muted p-4 font-mono text-sm overflow-x-auto">
           <span className="text-muted-foreground">Authorization:</span> Bearer your_api_key_here
         </div>
@@ -58,7 +58,7 @@ const ApiDocs = () => (
           <h2 className="font-display text-xl font-semibold">Base URL</h2>
         </div>
         <div className="rounded-lg bg-muted p-4 font-mono text-sm">
-          https://api.dataflow.com/v1
+          https://api.Intulist.com/v1
         </div>
       </section>
 

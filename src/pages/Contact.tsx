@@ -1,14 +1,14 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Mail, MapPin, Phone } from "lucide-react";
-import dataflowLogo from "@/assets/dataflow-logo.png";
+import intulistLogo from "@/assets/Intulist-logo.png";
 import Footer from "@/components/Footer";
 
 const Contact = () => (
   <div className="min-h-screen bg-background">
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
       <div className="container flex h-16 items-center justify-between">
-        <Link to="/"><img src={dataflowLogo} alt="DataFlow" className="h-12" /></Link>
+        <Link to="/"><img src={intulistLogo} alt="Intulist" className="h-12" /></Link>
         <Link to="/"><Button variant="ghost" size="sm" className="gap-1.5"><ArrowLeft className="w-4 h-4" /> Back</Button></Link>
       </div>
     </nav>
@@ -21,7 +21,7 @@ const Contact = () => (
 
       <div className="grid sm:grid-cols-3 gap-6">
         {[
-          { icon: Mail, title: "Email", detail: "support@dataflow.com", sub: "We respond within 24 hours" },
+          { icon: Mail, title: "Email", detail: "support@Intulist.com", sub: "We respond within 24 hours" },
           { icon: Phone, title: "Phone", detail: "+1 (555) 123-4567", sub: "Mon–Fri, 9 AM – 6 PM EST" },
           { icon: MapPin, title: "Office", detail: "123 Innovation Drive", sub: "San Francisco, CA 94107" },
         ].map((item) => (

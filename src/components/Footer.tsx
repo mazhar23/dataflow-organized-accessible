@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import dataflowLogo from "@/assets/dataflow-logo.png";
+import intulistLogo from "@/assets/Intulist-logo.png";
 
 const Footer = () => (
   <footer className="border-t border-border/50 py-14">
@@ -8,7 +8,7 @@ const Footer = () => (
         {/* Brand */}
         <div className="col-span-2 md:col-span-1">
           <Link to="/">
-            <img src={dataflowLogo} alt="DataFlow" className="h-8 mb-4" />
+            <img src={intulistLogo} alt="Intulist" className="h-8 mb-4" />
           </Link>
           <p className="text-sm text-muted-foreground leading-relaxed">
             Your single source of truth for consumer data management.
@@ -47,7 +47,7 @@ const Footer = () => (
       </div>
 
       <div className="mt-12 pt-6 border-t border-border/50 text-center">
-        <span className="text-xs text-muted-foreground">© 2026 DataFlow. All rights reserved.</span>
+        <span className="text-xs text-muted-foreground">© 2026 Intulist. All rights reserved.</span>
       </div>
     </div>
   </footer>
