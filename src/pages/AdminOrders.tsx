@@ -97,7 +97,7 @@ export default function AdminOrders() {
       return;
     }
     setCreating(true);
-    const { error } = await supabase.from("orders").insert({
+    const { data: newOrder, error } = await supabase.from("orders").insert({
       client_id: form.client_id,
       vendor_id: form.vendor_id || null,
       title: form.title,
@@ -106,12 +106,18 @@ export default function AdminOrders() {
       start_date: form.start_date,
       end_date: form.end_date,
       status: "Pending",
-    });
+    }).select().single();
     setCreating(false);
     if (error) {
       toast.error("Failed to create order");
     } else {
       toast.success("Order created");
+      // Notify the client
+      await supabase.from("notifications").insert({
+        user_profile_id: form.client_id,
+        title: "New order created",
+        message: `Your order "${form.title}" has been created with ${autoTotal} total leads (${form.leads_per_day}/day).`,
+      });
       setDialogOpen(false);
       setForm({ client_id: "", vendor_id: "", title: "", leads_per_day: "", start_date: "", end_date: "" });
       fetchData();
@@ -119,9 +125,23 @@ export default function AdminOrders() {
   };
 
   const updateStatus = async (orderId: string, status: string) => {
+    // Get order details first to find the client
+    const { data: order } = await supabase.from("orders").select("client_id, title").eq("id", orderId).single();
     const { error } = await supabase.from("orders").update({ status }).eq("id", orderId);
-    if (error) toast.error("Failed to update");
-    else { toast.success("Status updated"); fetchData(); }
+    if (error) {
+      toast.error("Failed to update");
+    } else {
+      toast.success("Status updated");
+      // Notify the client about status change
+      if (order) {
+        await supabase.from("notifications").insert({
+          user_profile_id: order.client_id,
+          title: "Order status updated",
+          message: `Your order "${order.title}" status changed to "${status}".`,
+        });
+      }
+      fetchData();
+    }
   };
 
   const deleteOrder = async (id: string) => {
