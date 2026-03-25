@@ -74,7 +74,7 @@ export default function AdminVendors() {
             <CardTitle className="flex items-center gap-2"><Store className="h-5 w-5 text-primary" />Vendors — {vendors.length} total</CardTitle>
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
               <DialogTrigger asChild><Button size="sm" className="gap-2" onClick={openCreate}><Plus className="h-4 w-4" /> Add Vendor</Button></DialogTrigger>
-              <DialogContent className="max-w-sm">
+              <DialogContent className="max-w-sm" aria-describedby={undefined}>
                 <DialogHeader><DialogTitle>{editingVendor ? "Edit Vendor" : "Add Vendor"}</DialogTitle></DialogHeader>
                 <div className="space-y-4 pt-2">
                   <div className="space-y-1.5">

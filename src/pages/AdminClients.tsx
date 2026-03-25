@@ -136,7 +136,7 @@ export default function AdminClients() {
               <DialogTrigger asChild>
                 <Button size="sm" className="gap-2"><Plus className="h-4 w-4" /> Create Client</Button>
               </DialogTrigger>
-              <DialogContent className="max-w-sm">
+              <DialogContent className="max-w-sm" aria-describedby={undefined}>
                 <DialogHeader><DialogTitle>Create Client</DialogTitle></DialogHeader>
                 <div className="space-y-4 pt-2">
                   <div className="space-y-1.5">

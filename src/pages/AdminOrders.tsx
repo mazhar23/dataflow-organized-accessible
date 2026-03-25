@@ -163,7 +163,7 @@ export default function AdminOrders() {
               <DialogTrigger asChild>
                 <Button size="sm" className="gap-2"><Plus className="h-4 w-4" /> Create Order</Button>
               </DialogTrigger>
-              <DialogContent className="max-w-md">
+              <DialogContent className="max-w-md" aria-describedby={undefined}>
                 <DialogHeader><DialogTitle>Create Order</DialogTitle></DialogHeader>
                 <div className="space-y-4 pt-2">
                   <div className="space-y-1.5">
