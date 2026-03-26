@@ -52,7 +52,11 @@ export default function AdminClients() {
   const [expandedClient, setExpandedClient] = useState<string | null>(null);
 
   const fetchClients = async () => {
-    const { data } = await supabase.from("profiles").select("*").eq("role", "client").order("created_at", { ascending: false });
+    const { data } = await supabase
+      .from("profiles")
+      .select("*")
+      .or("role.eq.client,role.is.null")
+      .order("created_at", { ascending: false });
     setClients(data ?? []);
     setLoading(false);
 
@@ -140,20 +144,20 @@ export default function AdminClients() {
                 <DialogHeader><DialogTitle>Create Client</DialogTitle></DialogHeader>
                 <div className="space-y-4 pt-2">
                   <div className="space-y-1.5">
-                    <Label>Full Name</Label>
-                    <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="John Doe" />
+                    <Label htmlFor="client-name">Full Name</Label>
+                    <Input id="client-name" name="name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="John Doe" />
                   </div>
                   <div className="space-y-1.5">
-                    <Label>Company (optional)</Label>
-                    <Input value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} placeholder="Acme Inc." />
+                    <Label htmlFor="client-company">Company (optional)</Label>
+                    <Input id="client-company" name="company" value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} placeholder="Acme Inc." />
                   </div>
                   <div className="space-y-1.5">
-                    <Label>Email</Label>
-                    <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="john@example.com" />
+                    <Label htmlFor="client-email">Email</Label>
+                    <Input id="client-email" type="email" name="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="john@example.com" />
                   </div>
                   <div className="space-y-1.5">
-                    <Label>Password</Label>
-                    <Input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} placeholder="Min 6 characters" />
+                    <Label htmlFor="client-password">Password</Label>
+                    <Input id="client-password" type="password" name="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} placeholder="Min 6 characters" />
                   </div>
                   <Button onClick={handleCreateClient} disabled={creating} className="w-full">
                     {creating ? "Creating..." : "Create Client"}

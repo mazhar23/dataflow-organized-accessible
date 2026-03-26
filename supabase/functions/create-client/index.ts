@@ -5,25 +5,13 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 // @ts-ignore
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const allowedOrigins = [
-  Deno.env.get("ALLOWED_ORIGIN"),
-  "https://www.intulist.co",
-  "https://intulist.co",
-  "https://id-preview--537705e6-728b-4bf5-aed3-bfcd05f639c9.lovable.app",
-].filter(Boolean);
-
-function getCorsHeaders(req: Request) {
-  const origin = req.headers.get("Origin") ?? "";
-  const isAllowed = allowedOrigins.some((o) => origin === o || origin.startsWith(o));
-  return {
-    "Access-Control-Allow-Origin": isAllowed ? origin : allowedOrigins[0] ?? "",
-    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-  };
-}
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+};
 
 serve(async (req: Request) => {
-  const corsHeaders = getCorsHeaders(req);
 
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
