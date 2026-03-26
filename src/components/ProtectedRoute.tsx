@@ -24,6 +24,18 @@ export const ProtectedRoute = ({ children }: { children: ReactNode }) => {
 
 export const AdminRoute = ({ children }: { children: ReactNode }) => {
   const { session, loading, userRole } = useAuth();
+  const [redirecting, setRedirecting] = useState(false);
+
+  useEffect(() => {
+    if (!loading && session && userRole !== "admin" && !redirecting) {
+      setRedirecting(true);
+      toast({
+        title: "Access Denied",
+        description: `You are logged in, but your role is "${userRole}". Admin privileges required.`,
+        variant: "destructive",
+      });
+    }
+  }, [loading, session, userRole, redirecting]);
 
   if (loading) {
     return (
