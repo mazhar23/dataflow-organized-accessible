@@ -23,39 +23,9 @@ export const ProtectedRoute = ({ children }: { children: ReactNode }) => {
 };
 
 export const AdminRoute = ({ children }: { children: ReactNode }) => {
-  const { session, loading } = useAuth();
-  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
-  const [checking, setChecking] = useState(true);
+  const { session, loading, userRole } = useAuth();
 
-  useEffect(() => {
-    const checkAdmin = async () => {
-      if (!session?.user) {
-        setIsAdmin(false);
-        setChecking(false);
-        return;
-      }
-      const { data, error } = await supabase.rpc("has_role", {
-        _user_id: session.user.id,
-        _role: "admin",
-      });
-      if (error || !data) {
-        setIsAdmin(false);
-        toast({
-          title: "Access Denied",
-          description: "You do not have admin privileges.",
-          variant: "destructive",
-        });
-      } else {
-        setIsAdmin(true);
-      }
-      setChecking(false);
-    };
-    if (!loading) {
-      checkAdmin();
-    }
-  }, [session, loading]);
-
-  if (loading || checking) {
+  if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
@@ -67,7 +37,7 @@ export const AdminRoute = ({ children }: { children: ReactNode }) => {
     return <Navigate to="/login" replace />;
   }
 
-  if (!isAdmin) {
+  if (userRole !== "admin") {
     return <Navigate to="/dashboard" replace />;
   }
 
