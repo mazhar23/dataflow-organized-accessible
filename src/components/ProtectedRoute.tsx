@@ -1,7 +1,6 @@
 import { ReactNode, useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
 export const ProtectedRoute = ({ children }: { children: ReactNode }) => {
@@ -27,7 +26,8 @@ export const AdminRoute = ({ children }: { children: ReactNode }) => {
   const [redirecting, setRedirecting] = useState(false);
 
   useEffect(() => {
-    if (!loading && session && userRole !== "admin" && !redirecting) {
+    // Only fire toast if we KNOW the role is non-admin (not null = still unknown)
+    if (!loading && session && userRole !== null && userRole !== "admin" && !redirecting) {
       setRedirecting(true);
       toast({
         title: "Access Denied",
@@ -49,7 +49,9 @@ export const AdminRoute = ({ children }: { children: ReactNode }) => {
     return <Navigate to="/login" replace />;
   }
 
-  if (userRole !== "admin") {
+  // IMPORTANT: Only redirect if we KNOW the role is not admin.
+  // If userRole is null, we don't know yet — do NOT redirect.
+  if (userRole !== null && userRole !== "admin") {
     return <Navigate to="/dashboard" replace />;
   }
 
