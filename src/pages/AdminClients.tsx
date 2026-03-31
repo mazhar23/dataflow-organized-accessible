@@ -106,16 +106,6 @@ export default function AdminClients() {
     }
     setCreating(true);
     try {
-      // Always refresh the session token before calling the Edge Function
-      const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
-      if (refreshError || !refreshData.session) {
-        toast.error("Your session has expired. Please sign out and log back in.", {
-          action: { label: "Sign Out", onClick: () => signOut() },
-          duration: 8000,
-        });
-        setCreating(false);
-        return;
-      }
 
       const { data, error } = await supabase.functions.invoke("create-client", {
         body: { name: form.name, email: form.email, password: form.password, company: form.company || null },
