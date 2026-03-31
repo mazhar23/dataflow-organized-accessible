@@ -106,24 +106,36 @@ export default function AdminClients() {
     }
     setCreating(true);
     try {
-
-      const { data, error } = await supabase.functions.invoke("create-client", {
-        body: { name: form.name, email: form.email, password: form.password, company: form.company || null },
+      // Bypass supabase.functions.invoke because it internally gets stuck on getSession Web Locks.
+      // We use a raw fetch instead, passing the JWT explicitly from React memory.
+      const functionUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-client`;
+      const response = await fetch(functionUrl, {
+        method: "POST",
         headers: {
-          // Explicitly pass the token from React state to bypass any blocked localStorage issues in Edge
-          Authorization: `Bearer ${session?.access_token}`,
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${session?.access_token}`,
         },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          password: form.password,
+          company: form.company || null,
+        }),
       });
-      if (error) {
-        // 401 means the Edge Function rejected our token — most likely a CORS or deploy issue
-        if (error.message?.includes("401") || error.message?.toLowerCase().includes("unauthorized")) {
-          toast.error("Authorization failed. Please sign out and log back in, or redeploy the Edge Function in Supabase.", { duration: 8000 });
-        } else {
-          throw error;
+
+      const responseText = await response.text();
+      let data;
+      try { data = JSON.parse(responseText); } catch (e) { data = { error: responseText }; }
+
+      if (!response.ok) {
+        const errorMsg = data?.error || response.statusText;
+        if (response.status === 401 || errorMsg.includes("401") || errorMsg.toLowerCase().includes("unauthorized")) {
+           toast.error("Authorization failed. Please sign out and log back in, or redeploy the Edge Function in Supabase.", { duration: 8000 });
+           setCreating(false);
+           return;
         }
-        return;
+        throw new Error(errorMsg);
       }
-      if (data?.error) throw new Error(data.error);
 
       toast.success(`Client ${form.name} created successfully`);
       setDialogOpen(false);
