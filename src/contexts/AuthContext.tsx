@@ -48,48 +48,63 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   useEffect(() => {
-    // Timeout to prevent infinite loading
-    const timeoutId = setTimeout(() => {
-      if (loading) {
-        console.warn("Auth loading timeout - forcing load complete");
-        setLoading(false);
+    let mounted = true;
+
+    // A robust, safe database fetcher with a manual timeout
+    const fetchProfileSafely = async (userId: string) => {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second max wait for DB
+        
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("id, role")
+          .eq("user_id", userId)
+          .abortSignal(controller.signal)
+          .single();
+          
+        clearTimeout(timeoutId);
+
+        if (error) throw error;
+        if (mounted) {
+          setUserRole(data?.role ?? "client");
+          setProfileId(data?.id ?? null);
+        }
+      } catch (err) {
+        console.error("Failed to fetch profile quickly:", err);
+        if (mounted) {
+          setUserRole("client"); // MUST fallback to client, never null
+          setProfileId(null);
+        }
+      } finally {
+        if (mounted) setLoading(false);
       }
-    }, 5000);
+    };
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
+        if (!mounted) return;
+        
         setSession(session);
         setUser(session?.user ?? null);
+        
         if (session?.user) {
-          await fetchProfile(session.user.id);
+          // If we have a user, fetch their role
+          await fetchProfileSafely(session.user.id);
         } else {
+          // No user logged in
           setUserRole(null);
           setProfileId(null);
+          setLoading(false);
         }
-        setLoading(false);
-        clearTimeout(timeoutId);
       }
     );
 
-    supabase.auth.getSession().then(async ({ data, error }) => {
-      if (error) console.error("Session error:", error);
-      const session = data?.session ?? null;
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        await fetchProfile(session.user.id);
-      }
-      setLoading(false);
-      clearTimeout(timeoutId);
-    }).catch((err) => {
-      console.error("Failed to get session:", err);
-      setLoading(false);
-      clearTimeout(timeoutId);
-    });
+    // No need to manually call getSession(), onAuthStateChange fires automatically on mount with INITIAL_SESSION
 
     return () => {
+      mounted = false;
       subscription.unsubscribe();
-      clearTimeout(timeoutId);
     };
   }, []);
 
