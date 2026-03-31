@@ -29,6 +29,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [profileId, setProfileId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Hard absolute timeout — no matter what happens, loading ends after 10s.
+  // This prevents the infinite spinner if Supabase keys are undefined or network is dead.
+  useEffect(() => {
+    const hardTimeout = setTimeout(() => {
+      setLoading((prev) => {
+        if (prev) console.warn("[AuthContext] Hard timeout hit — forcing loading:false");
+        return false;
+      });
+    }, 10000);
+    return () => clearTimeout(hardTimeout);
+  }, []);
+
   const fetchProfile = async (userId: string) => {
     try {
       const { data, error } = await supabase
