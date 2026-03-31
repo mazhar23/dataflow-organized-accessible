@@ -45,7 +45,7 @@ const statusColors: Record<string, string> = {
 
 export default function AdminClients() {
   const navigate = useNavigate();
-  const { signOut } = useAuth();
+  const { signOut, session } = useAuth();
   const [clients, setClients] = useState<ClientRow[]>([]);
   const [clientOrders, setClientOrders] = useState<Record<string, ClientOrder[]>>({});
   const [loading, setLoading] = useState(true);
@@ -109,6 +109,10 @@ export default function AdminClients() {
 
       const { data, error } = await supabase.functions.invoke("create-client", {
         body: { name: form.name, email: form.email, password: form.password, company: form.company || null },
+        headers: {
+          // Explicitly pass the token from React state to bypass any blocked localStorage issues in Edge
+          Authorization: `Bearer ${session?.access_token}`,
+        },
       });
       if (error) {
         // 401 means the Edge Function rejected our token — most likely a CORS or deploy issue
