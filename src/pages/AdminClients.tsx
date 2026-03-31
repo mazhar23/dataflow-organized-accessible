@@ -145,19 +145,19 @@ export default function AdminClients() {
                 <div className="space-y-4 pt-2">
                   <div className="space-y-1.5">
                     <Label htmlFor="client-name">Full Name</Label>
-                    <Input id="client-name" name="name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="John Doe" />
+                    <Input id="client-name" name="name" autoComplete="name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="John Doe" />
                   </div>
                   <div className="space-y-1.5">
                     <Label htmlFor="client-company">Company (optional)</Label>
-                    <Input id="client-company" name="company" value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} placeholder="Acme Inc." />
+                    <Input id="client-company" name="company" autoComplete="organization" value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} placeholder="Acme Inc." />
                   </div>
                   <div className="space-y-1.5">
                     <Label htmlFor="client-email">Email</Label>
-                    <Input id="client-email" type="email" name="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="john@example.com" />
+                    <Input id="client-email" type="email" name="email" autoComplete="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="john@example.com" />
                   </div>
                   <div className="space-y-1.5">
                     <Label htmlFor="client-password">Password</Label>
-                    <Input id="client-password" type="password" name="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} placeholder="Min 6 characters" />
+                    <Input id="client-password" type="password" name="password" autoComplete="new-password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} placeholder="Min 6 characters" />
                   </div>
                   <Button onClick={handleCreateClient} disabled={creating} className="w-full">
                     {creating ? "Creating..." : "Create Client"}
