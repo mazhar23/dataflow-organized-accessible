@@ -102,9 +102,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     );
 
-    // React 18 StrictMode can cancel the INITIAL_SESSION event, so we must manually check
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    // React 18 StrictMode can cancel the INITIAL_SESSION event, so we must manually check.
+    // Also handles stale tokens from DB restarts by signing out cleanly.
+    supabase.auth.getSession().then(async ({ data: { session }, error }) => {
       if (!mounted) return;
+      if (error) {
+        // Stale/invalid token – clear it so the user gets a clean login page
+        console.warn("Stale session detected, clearing:", error.message);
+        await supabase.auth.signOut();
+        if (mounted) setLoading(false);
+        return;
+      }
       if (session?.user) {
         fetchProfileSafely(session.user.id);
       } else {

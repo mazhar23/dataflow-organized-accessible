@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import Papa from "papaparse";
 import * as XLSX from "@e965/xlsx";
 import { supabase } from "@/integrations/supabase/client";
@@ -26,6 +27,7 @@ const VALID_STATUSES = ["Hot", "Warm", "Cold"];
 
 export default function AdminUpload() {
   const { profileId } = useAuth();
+  const location = useLocation();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = useState(false);
   const [rawData, setRawData] = useState<ParsedRow[]>([]);
@@ -68,6 +70,19 @@ export default function AdminUpload() {
     };
     fetchOrders();
   }, []);
+
+  // Pre-select order from URL query param (e.g. navigated from AdminClients)
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const orderId = params.get("orderId");
+    if (orderId && orders.length > 0) {
+      const match = orders.find((o) => o.id === orderId);
+      if (match) {
+        setSelectedOrderId(orderId);
+        setStep("upload");
+      }
+    }
+  }, [location.search, orders]);
 
   // Fetch today's progress when order or delivery date changes
   useEffect(() => {

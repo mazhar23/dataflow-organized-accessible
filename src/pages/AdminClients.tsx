@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import { AdminLayout } from "@/components/AdminLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,8 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Users, Plus, Trash2, ChevronDown, Package } from "lucide-react";
+import { Users, Plus, Trash2, ChevronDown, Upload } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import { TableSkeleton } from "@/components/TableSkeleton";
@@ -43,6 +44,8 @@ const statusColors: Record<string, string> = {
 };
 
 export default function AdminClients() {
+  const navigate = useNavigate();
+  const { signOut } = useAuth();
   const [clients, setClients] = useState<ClientRow[]>([]);
   const [clientOrders, setClientOrders] = useState<Record<string, ClientOrder[]>>({});
   const [loading, setLoading] = useState(true);
@@ -103,17 +106,36 @@ export default function AdminClients() {
     }
     setCreating(true);
     try {
+      // Always refresh the session token before calling the Edge Function
+      const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
+      if (refreshError || !refreshData.session) {
+        toast.error("Your session has expired. Please sign out and log back in.", {
+          action: { label: "Sign Out", onClick: () => signOut() },
+          duration: 8000,
+        });
+        setCreating(false);
+        return;
+      }
+
       const { data, error } = await supabase.functions.invoke("create-client", {
         body: { name: form.name, email: form.email, password: form.password, company: form.company || null },
       });
-      if (error) throw error;
+      if (error) {
+        // 401 means the Edge Function rejected our token — most likely a CORS or deploy issue
+        if (error.message?.includes("401") || error.message?.toLowerCase().includes("unauthorized")) {
+          toast.error("Authorization failed. Please sign out and log back in, or redeploy the Edge Function in Supabase.", { duration: 8000 });
+        } else {
+          throw error;
+        }
+        return;
+      }
       if (data?.error) throw new Error(data.error);
 
       toast.success(`Client ${form.name} created successfully`);
       setDialogOpen(false);
       setForm({ name: "", email: "", password: "", company: "" });
       // Wait briefly for trigger to create profile
-      setTimeout(fetchClients, 1000);
+      setTimeout(fetchClients, 1500);
     } catch (err: any) {
       toast.error(err.message ?? "Failed to create client");
     } finally {
@@ -219,8 +241,8 @@ export default function AdminClients() {
                           <TableRow key={`${c.id}-orders`} className="border-border/50 bg-muted/10">
                             <TableCell colSpan={7} className="p-0">
                               <div className="px-8 py-3 space-y-2">
-                                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
-                                  <Package className="h-3 w-3" /> Orders for {c.name}
+                                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                                  Orders for {c.name}
                                 </p>
                                 <div className="space-y-2">
                                   {orders.map((o) => {
@@ -240,6 +262,14 @@ export default function AdminClients() {
                                           <p className="text-xs text-muted-foreground">{o.delivered}/{o.total_leads_ordered} ({pct}%)</p>
                                           <Progress value={pct} className="h-1.5" />
                                         </div>
+                                        <Button
+                                          size="sm"
+                                          variant="outline"
+                                          className="shrink-0 gap-1.5 text-xs h-7"
+                                          onClick={() => navigate(`/admin/upload?orderId=${o.id}`)}
+                                        >
+                                          <Upload className="h-3 w-3" /> Upload Leads
+                                        </Button>
                                       </div>
                                     );
                                   })}
