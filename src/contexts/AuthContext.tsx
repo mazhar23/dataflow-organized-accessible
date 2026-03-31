@@ -115,14 +115,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     );
 
     // React 18 StrictMode can cancel the INITIAL_SESSION event, so we must manually check.
-    // Also handles stale tokens from DB restarts by signing out cleanly.
-    supabase.auth.getSession()
+    // Wrap in a Promise.race to prevent Supabase's internal Web Locks from hanging forever 
+    // in strict browsers like Edge with Tracking Prevention enabled.
+    const getSessionWithTimeout = () => {
+      return Promise.race([
+        supabase.auth.getSession(),
+        new Promise<{ data: { session: any }, error: any }>((_, reject) => 
+          setTimeout(() => reject(new Error("getSession timed out (Web Locks blocked?)")), 2000)
+        )
+      ]);
+    };
+
+    getSessionWithTimeout()
       .then(async ({ data: { session }, error }) => {
         if (!mounted) return;
         if (error) {
-          // Stale/invalid token – clear it so the user gets a clean login page
-          console.warn("Stale session detected, clearing:", error.message);
-          await supabase.auth.signOut();
+          console.warn("Stale or timed-out session detected:", error.message);
+          await supabase.auth.signOut().catch(() => {});
           if (mounted) setLoading(false);
           return;
         }
@@ -133,8 +142,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
       })
       .catch((err) => {
-        // If localStorage is blocked by browser (e.g. Edge Tracking Prevention), 
-        // getSession throws synchronously and bypasses .then()
         console.error("Critical Auth Error (Storage Blocked?):", err);
         if (mounted) setLoading(false);
       });
