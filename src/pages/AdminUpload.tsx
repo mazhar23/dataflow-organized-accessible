@@ -101,13 +101,43 @@ export default function AdminUpload() {
     fetchTodayCount();
   }, [selectedOrderId, deliveryDate, orders, step]);
 
+  const autoMapHeaders = (detectedHeaders: string[]) => {
+    const newMapping: Record<string, string> = {};
+    const lowerHeaders = detectedHeaders.map((h) => h.toLowerCase().trim());
+    
+    const fieldPatterns: Record<string, string[]> = {
+      name: ["name", "full name", "client name", "customer name", "fullname"],
+      email: ["email", "e-mail", "email address", "mail"],
+      phone: ["phone", "phone number", "mobile", "cell", "contact", "contact number"],
+      city: ["city", "location", "town", "region", "state", "postcode", "zip"],
+      status: ["status", "lead status", "state", "condition"],
+    };
+
+    REQUIRED_FIELDS.forEach((field) => {
+      const patterns = fieldPatterns[field] || [field];
+      const matchIndex = lowerHeaders.findIndex((h) => patterns.includes(h) || patterns.some((p) => h.includes(p)));
+      
+      if (matchIndex !== -1) {
+        newMapping[field] = detectedHeaders[matchIndex];
+      }
+    });
+    
+    setMapping(newMapping);
+  };
+
   const parseFile = useCallback((file: File) => {
     setFileName(file.name);
     const ext = file.name.split(".").pop()?.toLowerCase();
     if (ext === "csv") {
       Papa.parse(file, {
         header: true, skipEmptyLines: true,
-        complete: (results) => { setRawData(results.data as ParsedRow[]); setHeaders(results.meta.fields ?? []); setStep("map"); },
+        complete: (results) => { 
+          const detectedHeaders = results.meta.fields ?? [];
+          setRawData(results.data as ParsedRow[]); 
+          setHeaders(detectedHeaders); 
+          autoMapHeaders(detectedHeaders);
+          setStep("map"); 
+        },
         error: () => toast.error("Failed to parse CSV file"),
       });
     } else if (ext === "xlsx" || ext === "xls") {
@@ -116,7 +146,11 @@ export default function AdminUpload() {
         const wb = XLSX.read(e.target?.result, { type: "array" });
         const ws = wb.Sheets[wb.SheetNames[0]];
         const data = XLSX.utils.sheet_to_json<ParsedRow>(ws, { defval: "" });
-        setRawData(data); setHeaders(Object.keys(data[0] ?? {})); setStep("map");
+        const detectedHeaders = Object.keys(data[0] ?? {});
+        setRawData(data); 
+        setHeaders(detectedHeaders); 
+        autoMapHeaders(detectedHeaders);
+        setStep("map");
       };
       reader.readAsArrayBuffer(file);
     } else { toast.error("Only .csv and .xlsx files are supported"); }
