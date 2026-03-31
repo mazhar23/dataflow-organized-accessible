@@ -49,9 +49,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     let mounted = true;
+    let hasFetchedProfile = false;
 
     // A robust, safe database fetcher with a manual timeout
     const fetchProfileSafely = async (userId: string) => {
+      if (hasFetchedProfile) return;
+      hasFetchedProfile = true;
+      
       try {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second max wait for DB
@@ -89,10 +93,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          // If we have a user, fetch their role
           await fetchProfileSafely(session.user.id);
         } else {
-          // No user logged in
           setUserRole(null);
           setProfileId(null);
           setLoading(false);
@@ -100,7 +102,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     );
 
-    // No need to manually call getSession(), onAuthStateChange fires automatically on mount with INITIAL_SESSION
+    // React 18 StrictMode can cancel the INITIAL_SESSION event, so we must manually check
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!mounted) return;
+      if (session?.user) {
+        fetchProfileSafely(session.user.id);
+      } else {
+        setLoading(false);
+      }
+    });
 
     return () => {
       mounted = false;
