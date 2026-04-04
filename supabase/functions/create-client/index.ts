@@ -1,8 +1,9 @@
+// @ts-expect-error Deno global
 declare const Deno: any;
 
-// @ts-ignore
+// @ts-expect-error Deno import
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-// @ts-ignore
+// @ts-expect-error ESM import
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
@@ -82,9 +83,10 @@ serve(async (req: Request) => {
       JSON.stringify({ user_id: authData.user.id, message: "Client created successfully" }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 }
     );
-  } catch (error: any) {
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: errorMessage }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 400 }
     );
   }
