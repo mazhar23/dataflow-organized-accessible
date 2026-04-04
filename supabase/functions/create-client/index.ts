@@ -1,4 +1,4 @@
-// @ts-expect-error Deno global
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare const Deno: any;
 
 // @ts-expect-error Deno import
