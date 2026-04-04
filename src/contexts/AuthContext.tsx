@@ -49,12 +49,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         .eq("user_id", userId)
         .single();
 
-      if (error) throw error;
-      setUserRole(data?.role ?? "client");
-      setProfileId(data?.id ?? null);
+      if (error) {
+        console.error("Profile fetch error:", error);
+        throw error;
+      }
+
+      if (data) {
+        setUserRole(data.role ?? "client");
+        setProfileId(data.id ?? null);
+      } else {
+        console.warn("No profile found for user:", userId);
+        setUserRole("client");
+        setProfileId(null);
+      }
     } catch (err) {
       console.error("Failed to fetch profile:", err);
-      setUserRole("client"); // default safe fallback
+      // Still set a default role so the app can continue functioning
+      setUserRole("client");
       setProfileId(null);
     }
   };
@@ -63,37 +74,42 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     let mounted = true;
     let hasFetchedProfile = false;
 
-    // A robust, safe database fetcher with a manual timeout
+    // A robust, safe database fetcher with timeout and better error handling
     const fetchProfileSafely = async (userId: string) => {
       if (hasFetchedProfile) return;
       hasFetchedProfile = true;
-      
+
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second max wait for DB
-        
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
         const { data, error } = await supabase
           .from("profiles")
           .select("id, role")
           .eq("user_id", userId)
           .abortSignal(controller.signal)
           .single();
-          
+
         clearTimeout(timeoutId);
 
-        if (error) throw error;
+        if (error) {
+          console.error("Profile fetch error:", error);
+          throw error;
+        }
+
         if (mounted) {
           setUserRole(data?.role ?? "client");
           setProfileId(data?.id ?? null);
+          setLoading(false);
         }
       } catch (err) {
-        console.error("Failed to fetch profile quickly:", err);
+        console.error("Failed to fetch profile:", err);
+        // Even on error, set defaults and continue - don't block the app
         if (mounted) {
-          setUserRole("client"); // MUST fallback to client, never null
+          setUserRole("client"); // Safe fallback
           setProfileId(null);
+          setLoading(false);
         }
-      } finally {
-        if (mounted) setLoading(false);
       }
     };
 
@@ -115,13 +131,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     );
 
     // React 18 StrictMode can cancel the INITIAL_SESSION event, so we must manually check.
-    // Wrap in a Promise.race to prevent Supabase's internal Web Locks from hanging forever 
-    // in strict browsers like Edge with Tracking Prevention enabled.
+    // Use a more conservative timeout to avoid prematurely signing out valid users
     const getSessionWithTimeout = () => {
       return Promise.race([
         supabase.auth.getSession(),
-        new Promise<{ data: { session: any }, error: any }>((_, reject) => 
-          setTimeout(() => reject(new Error("getSession timed out (Web Locks blocked?)")), 2000)
+        new Promise<{ data: { session: any }, error: any }>((_, reject) =>
+          setTimeout(() => reject(new Error("getSession timed out - may be due to browser restrictions")), 5000)
         )
       ]);
     };
@@ -130,9 +145,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       .then(async ({ data: { session }, error }) => {
         if (!mounted) return;
         if (error) {
-          console.warn("Stale or timed-out session detected:", error.message);
-          await supabase.auth.signOut().catch(() => {});
-          if (mounted) setLoading(false);
+          console.warn("Session check timeout:", error.message);
+          // Don't automatically sign out - just mark as no session and continue
+          // This prevents valid sessions from being destroyed due to slow getSession calls
+          setSession(null);
+          setUser(null);
+          setUserRole(null);
+          setProfileId(null);
+          setLoading(false);
           return;
         }
         if (session?.user) {
@@ -142,8 +162,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
       })
       .catch((err) => {
-        console.error("Critical Auth Error (Storage Blocked?):", err);
-        if (mounted) setLoading(false);
+        console.error("Session initialization error:", err);
+        // On critical errors, still don't auto-signout - let user try to sign in again
+        if (mounted) {
+          setSession(null);
+          setUser(null);
+          setUserRole(null);
+          setProfileId(null);
+          setLoading(false);
+        }
       });
 
     return () => {
