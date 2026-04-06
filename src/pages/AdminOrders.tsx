@@ -186,20 +186,20 @@ export default function AdminOrders() {
                   </div>
                   <div className="space-y-1.5">
                     <Label>Package Title</Label>
-                    <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="e.g. 50 Leads/Day - March" />
+                    <Input autoComplete="off" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="e.g. 50 Leads/Day - March" />
                   </div>
                   <div className="space-y-1.5">
                     <Label>Leads per Day</Label>
-                    <Input type="number" value={form.leads_per_day} onChange={(e) => setForm({ ...form, leads_per_day: e.target.value })} placeholder="50" />
+                    <Input autoComplete="off" type="number" value={form.leads_per_day} onChange={(e) => setForm({ ...form, leads_per_day: e.target.value })} placeholder="50" />
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1.5">
                       <Label>Start Date</Label>
-                      <Input type="date" value={form.start_date} onChange={(e) => setForm({ ...form, start_date: e.target.value })} />
+                      <Input autoComplete="off" type="date" value={form.start_date} onChange={(e) => setForm({ ...form, start_date: e.target.value })} />
                     </div>
                     <div className="space-y-1.5">
                       <Label>End Date</Label>
-                      <Input type="date" value={form.end_date} onChange={(e) => setForm({ ...form, end_date: e.target.value })} />
+                      <Input autoComplete="off" type="date" value={form.end_date} onChange={(e) => setForm({ ...form, end_date: e.target.value })} />
                     </div>
                   </div>
                   {autoTotal > 0 && (

@@ -39,10 +39,10 @@ const Contact = () => (
       <div className="glass-card rounded-xl p-8 space-y-6">
         <h2 className="font-display text-xl font-semibold">Send us a Message</h2>
         <div className="grid sm:grid-cols-2 gap-4">
-          <input type="text" placeholder="Your Name" className="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
-          <input type="email" placeholder="Your Email" className="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+          <input type="text" autoComplete="name" placeholder="Your Name" className="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+          <input type="email" autoComplete="email" placeholder="Your Email" className="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
         </div>
-        <input type="text" placeholder="Subject" className="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+        <input type="text" autoComplete="off" placeholder="Subject" className="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
         <textarea placeholder="Your message..." rows={5} className="w-full rounded-lg border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none" />
         <Button variant="hero" size="lg">Send Message</Button>
       </div>

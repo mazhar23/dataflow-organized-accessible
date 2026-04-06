@@ -237,7 +237,7 @@ export default function AdminUpload() {
                 </div>
                 <div className="space-y-1.5">
                   <Label>Delivery Date</Label>
-                  <Input type="date" value={deliveryDate} onChange={(e) => setDeliveryDate(e.target.value)} />
+                  <Input autoComplete="off" type="date" value={deliveryDate} onChange={(e) => setDeliveryDate(e.target.value)} />
                   <p className="text-xs text-muted-foreground">Which day's quota do these leads belong to?</p>
                 </div>
 

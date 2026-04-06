@@ -79,11 +79,11 @@ export default function AdminVendors() {
                 <div className="space-y-4 pt-2">
                   <div className="space-y-1.5">
                     <Label>Name</Label>
-                    <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. Sharma Data Co." />
+                    <Input autoComplete="organization" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. Sharma Data Co." />
                   </div>
                   <div className="space-y-1.5">
                     <Label>Contact (optional)</Label>
-                    <Input value={form.contact} onChange={(e) => setForm({ ...form, contact: e.target.value })} placeholder="Phone or email" />
+                    <Input autoComplete="tel" value={form.contact} onChange={(e) => setForm({ ...form, contact: e.target.value })} placeholder="Phone or email" />
                   </div>
                   <Button onClick={handleSave} disabled={saving} className="w-full">{saving ? "Saving..." : editingVendor ? "Update Vendor" : "Add Vendor"}</Button>
                 </div>
