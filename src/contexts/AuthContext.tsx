@@ -132,13 +132,38 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     // React 18 StrictMode can cancel the INITIAL_SESSION event, so we must manually check.
     // Use a more conservative timeout to avoid prematurely signing out valid users
-    const getSessionWithTimeout = () => {
-      return Promise.race([
-        supabase.auth.getSession(),
-        new Promise<{ data: { session: any }, error: any }>((_, reject) =>
-          setTimeout(() => reject(new Error("getSession timed out - may be due to browser restrictions")), 5000)
-        )
-      ]);
+    const getSessionWithTimeout = async () => {
+      try {
+        const result = await Promise.race([
+          supabase.auth.getSession(),
+          new Promise<{ data: { session: any }, error: any }>((_, reject) =>
+            setTimeout(() => reject(new Error("getSession timed out - may be due to browser restrictions")), 5000)
+          )
+        ]);
+        return result;
+      } catch (err: any) {
+        console.warn("getSession timeout caught, attempting to read session manually from storage");
+        try {
+          if (typeof window !== "undefined" && window.localStorage) {
+            const keys = Object.keys(window.localStorage);
+            const authKey = keys.find(k => k.startsWith('sb-') && k.endsWith('-auth-token'));
+            if (authKey) {
+              const authData = window.localStorage.getItem(authKey);
+              if (authData) {
+                const session = JSON.parse(authData);
+                if (session && (session.access_token || session.provider_token)) {
+                  console.log("Successfully recovered session manually");
+                  return { data: { session }, error: null };
+                }
+              }
+            }
+          }
+        } catch (e) {
+          console.warn("Manual session recovery failed", e);
+        }
+        // If recovery fails, throw the original timeout error
+        throw err;
+      }
     };
 
     getSessionWithTimeout()
