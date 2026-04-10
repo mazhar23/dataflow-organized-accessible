@@ -15,7 +15,7 @@ export default {
   	extend: {
   		fontFamily: {
   			display: [
-  				'Space Grotesk"',
+  				'Space Grotesk',
   				'system-ui',
   				'sans-serif'
   			],
