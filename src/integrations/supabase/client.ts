@@ -13,5 +13,12 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
     storage: localStorage,
     persistSession: true,
     autoRefreshToken: true,
+    // Bypass the Web Locks API entirely.
+    // In browsers with strict tracking prevention (e.g. Brave), navigator.locks.request 
+    // hangs indefinitely, blocking all getSession and database calls.
+    lock: async (name, acquireTimeout, fn) => {
+      // Execute directly without attempting cross-tab locking
+      return await fn();
+    }
   }
 });

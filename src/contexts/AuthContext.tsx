@@ -75,7 +75,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     let hasFetchedProfile = false;
 
     // A robust, safe database fetcher with timeout and better error handling
-    const fetchProfileSafely = async (userId: string) => {
+    const fetchProfileSafely = async (userId: string, accessToken?: string) => {
       if (hasFetchedProfile) return;
       hasFetchedProfile = true;
 
@@ -83,18 +83,51 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
-        const { data, error } = await supabase
-          .from("profiles")
-          .select("id, role")
-          .eq("user_id", userId)
-          .abortSignal(controller.signal)
-          .single();
+        let data: any = null;
+        let fetchError: any = null;
 
-        clearTimeout(timeoutId);
+        if (accessToken) {
+          // Use Raw Fetch to absolutely bypass the Supabase interlocking client state
+          const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+          const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+          
+          try {
+            const res = await fetch(`${SUPABASE_URL}/rest/v1/profiles?user_id=eq.${userId}&select=id,role`, {
+              headers: {
+                "apikey": SUPABASE_KEY,
+                "Authorization": `Bearer ${accessToken}`,
+                "Content-Type": "application/json",
+                "Prefer": "return=representation"
+              },
+              signal: controller.signal
+            });
+            clearTimeout(timeoutId);
+            
+            if (!res.ok) {
+               fetchError = new Error("Profile fetch failed with status " + res.status);
+            } else {
+               const json = await res.json();
+               data = json[0] || null;
+            }
+          } catch(e) {
+             fetchError = e;
+          }
+        } else {
+          // Fallback to supabase client
+          const { data: qData, error } = await supabase
+            .from("profiles")
+            .select("id, role")
+            .eq("user_id", userId)
+            .abortSignal(controller.signal)
+            .single();
+          clearTimeout(timeoutId);
+          data = qData;
+          fetchError = error;
+        }
 
-        if (error) {
-          console.error("Profile fetch error:", error);
-          throw error;
+        if (fetchError) {
+          console.error("Profile fetch error:", fetchError);
+          throw fetchError;
         }
 
         if (mounted) {
@@ -120,7 +153,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setSession(session);
         setUser(session?.user ?? null);
         
-        if (session?.user) {
+        if (session?.user && session.access_token) {
+          await fetchProfileSafely(session.user.id, session.access_token);
+        } else if (session?.user) {
           await fetchProfileSafely(session.user.id);
         } else {
           setUserRole(null);
@@ -180,7 +215,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           setLoading(false);
           return;
         }
-        if (session?.user) {
+        if (session?.user && session.access_token) {
+          fetchProfileSafely(session.user.id, session.access_token);
+        } else if (session?.user) {
           fetchProfileSafely(session.user.id);
         } else {
           setLoading(false);
