@@ -74,7 +74,7 @@ export default function OrderDetail() {
     if (!orderId) return;
     const [orderRes, leadsRes] = await Promise.all([
       supabase.from("orders").select("*").eq("id", orderId).single(),
-      supabase.from("leads").select("*").eq("order_id", orderId).order("uploaded_at", { ascending: false }),
+      supabase.from("leads").select("*").eq("order_id", orderId).lte("uploaded_at", new Date().toISOString()).order("uploaded_at", { ascending: false }),
     ]);
     setOrder(orderRes.data);
     setLeads(leadsRes.data ?? []);

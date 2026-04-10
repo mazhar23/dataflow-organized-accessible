@@ -174,17 +174,29 @@ export default function AdminUpload() {
     if (!profileId || !selectedOrderId || !selectedOrder) return;
     setUploading(true);
     try {
-      const leadsToInsert = mappedData.map((row) => ({
-        name: row.name,
-        email: row.email || null,
-        phone: row.phone || null,
-        city: row.city || null,
-        status: row.status,
-        order_id: selectedOrderId,
-        client_id: selectedOrder.client_id,
-        vendor_id: selectedOrder.vendor_id,
-        delivery_date: deliveryDate,
-      }));
+      const now = new Date();
+      let lastUploadedAt = new Date(now.getTime() + 5 * 60000); // 5 minutes from now for the very first lead
+
+      const leadsToInsert = mappedData.map((row, index) => {
+        if (index > 0) {
+          // Random delay between 5 to 11 minutes
+          const randomDelayMins = Math.floor(Math.random() * (11 - 5 + 1)) + 5;
+          lastUploadedAt = new Date(lastUploadedAt.getTime() + randomDelayMins * 60000);
+        }
+
+        return {
+          name: row.name,
+          email: row.email || null,
+          phone: row.phone || null,
+          city: row.city || null,
+          status: row.status,
+          order_id: selectedOrderId,
+          client_id: selectedOrder.client_id,
+          vendor_id: selectedOrder.vendor_id,
+          delivery_date: deliveryDate,
+          uploaded_at: lastUploadedAt.toISOString(),
+        };
+      });
 
       const { error: leadsError } = await supabase.from("leads").insert(leadsToInsert);
       if (leadsError) throw leadsError;

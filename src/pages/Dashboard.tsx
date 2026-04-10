@@ -59,7 +59,8 @@ const Dashboard = () => {
       const { data: leads } = await supabase
         .from("leads")
         .select("order_id")
-        .in("order_id", orderIds);
+        .in("order_id", orderIds)
+        .lte("uploaded_at", new Date().toISOString());
       const counts: Record<string, number> = {};
       leads?.forEach((l) => { counts[l.order_id!] = (counts[l.order_id!] || 0) + 1; });
       setDeliveredCounts(counts);
