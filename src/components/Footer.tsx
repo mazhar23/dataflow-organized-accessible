@@ -46,8 +46,14 @@ const Footer = () => (
         </div>
       </div>
 
-      <div className="mt-12 pt-6 border-t border-border/50 text-center">
+      <div className="mt-12 pt-6 border-t border-border/50 flex flex-col items-center gap-2">
         <span className="text-xs text-muted-foreground">© 2026 Intulist. All rights reserved.</span>
+        <span className="text-xs text-muted-foreground">
+          Developed by{" "}
+          <a href="https://artum8labs.com" target="_blank" rel="noopener noreferrer" className="hover:text-foreground hover:underline transition-colors">
+            Artum 8 Labs LLC.
+          </a>
+        </span>
       </div>
     </div>
   </footer>
