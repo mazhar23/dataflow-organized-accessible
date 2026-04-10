@@ -158,6 +158,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         } else if (session?.user) {
           await fetchProfileSafely(session.user.id);
         } else {
+          hasFetchedProfile = false;
           setUserRole(null);
           setProfileId(null);
           setLoading(false);
