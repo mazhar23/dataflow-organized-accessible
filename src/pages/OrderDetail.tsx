@@ -158,10 +158,10 @@ export default function OrderDetail() {
 
   const exportCSV = () => {
     const data = filtered;
-    const header = "Name,Email,Phone,City,Status,Delivery Date,Uploaded At\n";
+    const header = "Name,Email,Phone,City,Status,Delivery Date,Generated on\n";
     const rows = data
       .map((l) =>
-        [l.name, l.email ?? "", l.phone ?? "", l.city ?? "", l.status, l.delivery_date ?? "", format(new Date(l.uploaded_at), "yyyy-MM-dd HH:mm")].join(",")
+        [l.name, l.email ?? "", l.phone ?? "", l.city ?? "", l.status, l.delivery_date ?? "", format(new Date(l.uploaded_at), "yyyy-MM-dd")].join(",")
       )
       .join("\n");
     const blob = new Blob([header + rows], { type: "text/csv" });
@@ -181,7 +181,7 @@ export default function OrderDetail() {
       City: l.city ?? "",
       Status: l.status,
       "Delivery Date": l.delivery_date ?? "",
-      "Uploaded At": format(new Date(l.uploaded_at), "yyyy-MM-dd HH:mm"),
+      "Generated on": format(new Date(l.uploaded_at), "yyyy-MM-dd"),
     }));
     const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
