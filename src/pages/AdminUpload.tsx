@@ -22,8 +22,7 @@ type OrderOption = {
   client_name: string; client_id: string; vendor_id: string | null;
 };
 
-const REQUIRED_FIELDS = ["name", "email", "phone", "city", "status"] as const;
-const VALID_STATUSES = ["Hot", "Warm", "Cold"];
+const REQUIRED_FIELDS = ["Bank", "FirstName", "LastName", "Address", "City", "State", "Zip", "Phone", "Email"] as const;
 
 export default function AdminUpload() {
   const { profileId } = useAuth();
@@ -106,15 +105,19 @@ export default function AdminUpload() {
     const lowerHeaders = detectedHeaders.map((h) => h.toLowerCase().trim());
     
     const fieldPatterns: Record<string, string[]> = {
-      name: ["name", "full name", "client name", "customer name", "fullname"],
-      email: ["email", "e-mail", "email address", "mail"],
-      phone: ["phone", "phone number", "mobile", "cell", "contact", "contact number"],
-      city: ["city", "location", "town", "region", "state", "postcode", "zip"],
-      status: ["status", "lead status", "state", "condition"],
+      Bank: ["bank", "bank name", "financial institution", "financial"],
+      FirstName: ["first name", "firstname", "first"],
+      LastName: ["last name", "lastname", "last"],
+      Address: ["address", "street", "street address"],
+      City: ["city", "location", "town"],
+      State: ["state", "province", "region"],
+      Zip: ["zip", "zip code", "zipcode", "postal", "postal code", "postcode"],
+      Phone: ["phone", "phone number", "mobile", "cell", "contact", "contact number"],
+      Email: ["email", "e-mail", "email address", "mail"],
     };
 
     REQUIRED_FIELDS.forEach((field) => {
-      const patterns = fieldPatterns[field] || [field];
+      const patterns = fieldPatterns[field] || [field.toLowerCase()];
       const matchIndex = lowerHeaders.findIndex((h) => patterns.includes(h) || patterns.some((p) => h.includes(p)));
       
       if (matchIndex !== -1) {
@@ -162,8 +165,6 @@ export default function AdminUpload() {
   const mappedData = rawData.map((row) => {
     const mapped: Record<string, string> = {};
     for (const field of REQUIRED_FIELDS) { const src = mapping[field]; mapped[field] = src ? (row[src] ?? "") : ""; }
-    if (mapped.status) { const s = mapped.status.charAt(0).toUpperCase() + mapped.status.slice(1).toLowerCase(); mapped.status = VALID_STATUSES.includes(s) ? s : "Cold"; }
-    else { mapped.status = "Cold"; }
     return mapped;
   });
 
@@ -185,11 +186,17 @@ export default function AdminUpload() {
         }
 
         return {
-          name: row.name,
-          email: row.email || null,
-          phone: row.phone || null,
-          city: row.city || null,
-          status: row.status,
+          name: [row.FirstName, row.LastName].filter(Boolean).join(" ") || "Unknown",
+          first_name: row.FirstName || null,
+          last_name: row.LastName || null,
+          email: row.Email || null,
+          phone: row.Phone || null,
+          address: row.Address || null,
+          city: row.City || null,
+          state: row.State || null,
+          zip: row.Zip || null,
+          bank: row.Bank || null,
+          status: "Cold",
           order_id: selectedOrderId,
           client_id: selectedOrder.client_id,
           vendor_id: selectedOrder.vendor_id,
@@ -335,17 +342,19 @@ export default function AdminUpload() {
           <CardContent>
             <div className="overflow-x-auto max-h-[500px] overflow-y-auto">
               <Table>
-                <TableHeader><TableRow className="border-border/50">{REQUIRED_FIELDS.map((f) => <TableHead key={f} className="capitalize">{f}</TableHead>)}</TableRow></TableHeader>
+                <TableHeader><TableRow className="border-border/50">{REQUIRED_FIELDS.map((f) => <TableHead key={f}>{f}</TableHead>)}</TableRow></TableHeader>
                 <TableBody>
                   {mappedData.slice(0, 100).map((row, i) => (
                     <TableRow key={i} className="border-border/50">
-                      <TableCell className="font-medium">{row.name}</TableCell>
-                      <TableCell className="text-muted-foreground">{row.email || "—"}</TableCell>
-                      <TableCell className="text-muted-foreground">{row.phone || "—"}</TableCell>
-                      <TableCell className="text-muted-foreground">{row.city || "—"}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className={row.status === "Hot" ? "bg-red-500/15 text-red-400 border-red-500/30" : row.status === "Warm" ? "bg-orange-500/15 text-orange-400 border-orange-500/30" : "bg-blue-500/15 text-blue-400 border-blue-500/30"}>{row.status}</Badge>
-                      </TableCell>
+                      <TableCell className="font-medium">{row.Bank}</TableCell>
+                      <TableCell>{row.FirstName}</TableCell>
+                      <TableCell>{row.LastName}</TableCell>
+                      <TableCell>{row.Address}</TableCell>
+                      <TableCell>{row.City}</TableCell>
+                      <TableCell>{row.State}</TableCell>
+                      <TableCell>{row.Zip}</TableCell>
+                      <TableCell>{row.Phone}</TableCell>
+                      <TableCell>{row.Email}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

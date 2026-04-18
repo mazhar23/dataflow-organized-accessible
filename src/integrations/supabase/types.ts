@@ -16,11 +16,15 @@ export type Database = {
     Tables: {
       leads: {
         Row: {
+          address: string | null
+          bank: string | null
           city: string | null
           client_id: string | null
           delivery_date: string | null
           email: string | null
+          first_name: string | null
           id: string
+          last_name: string | null
           name: string
           order_id: string | null
           phone: string | null
@@ -28,13 +32,18 @@ export type Database = {
           status: string
           uploaded_at: string
           vendor_id: string | null
+          zip: string | null
         }
         Insert: {
+          address?: string | null
+          bank?: string | null
           city?: string | null
           client_id?: string | null
           delivery_date?: string | null
           email?: string | null
+          first_name?: string | null
           id?: string
+          last_name?: string | null
           name: string
           order_id?: string | null
           phone?: string | null
@@ -42,13 +51,18 @@ export type Database = {
           status?: string
           uploaded_at?: string
           vendor_id?: string | null
+          zip?: string | null
         }
         Update: {
+          address?: string | null
+          bank?: string | null
           city?: string | null
           client_id?: string | null
           delivery_date?: string | null
           email?: string | null
+          first_name?: string | null
           id?: string
+          last_name?: string | null
           name?: string
           order_id?: string | null
           phone?: string | null
@@ -56,6 +70,7 @@ export type Database = {
           status?: string
           uploaded_at?: string
           vendor_id?: string | null
+          zip?: string | null
         }
         Relationships: [
           {
