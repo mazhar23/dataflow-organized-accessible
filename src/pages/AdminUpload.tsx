@@ -222,11 +222,21 @@ export default function AdminUpload() {
     try {
       const now = new Date();
       let lastUploadedAt = new Date(now.getTime() + 5 * 60000);
+      
+      // Dynamic Time-Boxing for 4-Hour SLA (240 minutes total)
+      // We subtract the initial 5 min offset = 235 mins available.
+      // We aim for the old ~8 mins average per lead, but strictly bounded by the 235 min max.
+      const totalLeads = mappedData.length;
+      const MAX_AVAILABLE_MINS = 235;
+      const targetTotalDuration = Math.min(MAX_AVAILABLE_MINS, (totalLeads - 1) * 8);
+      const baseInterval = totalLeads > 1 ? targetTotalDuration / (totalLeads - 1) : 0;
 
       const leadsToInsert = mappedData.map((row, index) => {
         if (index > 0) {
-          const randomDelayMins = Math.floor(Math.random() * (11 - 5 + 1)) + 5;
-          lastUploadedAt = new Date(lastUploadedAt.getTime() + randomDelayMins * 60000);
+          // Add 0.8x to 1.2x of the base interval to seem organic (+/- 20%)
+          const variance = 0.8 + (Math.random() * 0.4);
+          const delayMins = baseInterval * variance;
+          lastUploadedAt = new Date(lastUploadedAt.getTime() + delayMins * 60000);
         }
 
         const coreRow = row as Record<string, string>;
